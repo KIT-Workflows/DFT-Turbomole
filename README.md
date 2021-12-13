@@ -5,6 +5,16 @@ The DFT-Turbomole WaNo implements a wide range of methods available within the T
 
 Figure 1 displays the Turbomole flags, where we can name the calculation and define the following field of parameters: `Molecular structure`, `Basis set`, `initial guess`, `DFT options` and `Type of calculation`.
 
+## 1. Python Setup
+To get this WaNo up running on your available computational resources, make sure to have the below libraries installed on Python 3.6 or newer.
+
+```
+1. Atomic Simulation Environment (ASE).
+2. Python Materials Genomics (Pymatgen).
+3. subprocess, glob, os, sys, yaml. 
+```
+
+
 ## Description
 
 This is a sample WaNo.
