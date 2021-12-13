@@ -24,7 +24,7 @@ To get this WaNo up running on your available computational resources, make sure
 - **Type of calculation**: Here the user can perform Structure optimization, Excited states (TDDFT), and frequency (vibrational states) calculations. 
 - 
 ## 3. DFT-Turbomole Output files 
-   - results.tar.xz 
+   - results.tar.xz (contains all the following files: 'alpha','auxbasis','basis','beta','control','coord','energy','forceapprox','gradient','hessapprox','mos','optinfo','rendered_wano.yml','sing_a','trip_a','unrs_a)
    - turbomole_results.yml (contains some info like energy value, energy unit, the title of the structure, and the Homo-Lumo gap of the system.)
    - final_structure.xyz (final structure after the calculation)
 
