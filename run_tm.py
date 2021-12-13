@@ -3,11 +3,14 @@ import os,sys,yaml
 import turbomole_functions as tm
 import ase.io
 
-#######################################################################
-###                                                                 ###
-### prerequisite files: rendered_wano.yml, initial_structure.xyz (coord_0) ###
-###                                                                 ###
-#######################################################################
+from pymatgen.io import xyz
+from pymatgen.io.gaussian import GaussianInput
+
+################################################################
+###                                                          ###
+### prerequisite files: rendered_wano.yml, initial_structure ###
+###                                                          ###
+################################################################
 
 def get_settings_from_rendered_wano(filename='rendered_wano.yml'):
 
@@ -19,12 +22,13 @@ def get_settings_from_rendered_wano(filename='rendered_wano.yml'):
     
     settings['title']=wano_file['Title']
     settings['follow-up']=wano_file['Follow-up calculation']
+    settings['structure file type']=wano_file['Molecular structure']['Structure file type']
     settings['int coord']=wano_file['Molecular structure']['Internal coordinates']
     settings['basis set']=wano_file['Basis set']['Basis set type']
     settings['use old mos']=wano_file['Initial guess']['Use old orbitals']
-    settings['use old coord']=wano_file['Molecular structure']['Use old structure']
-    settings['charge']=wano_file['Initial guess']['Charge']
-    settings['multiplicity']=wano_file['Initial guess']['Multiplicity']
+    settings['charge from file']=wano_file['Initial guess']['G1']['Use charge and multiplicity from input file']
+    settings['charge']=wano_file['Initial guess']['G1']['Charge']
+    settings['multiplicity']=wano_file['Initial guess']['G1']['Multiplicity']
     settings['scf iter']=60
     settings['max scf iter']=wano_file['DFT options']['Max SCF iterations']
     settings['use ri']=wano_file['DFT options']['Use RI']
@@ -77,16 +81,24 @@ if __name__ == '__main__':
 
     if settings['follow-up']: 
         os.system('mkdir old_results; tar -xf old_calc.tar.xz -C old_results')
+        os.system('cp old_results/coord %s'%(coord_file))
         old_settings = get_settings_from_rendered_wano(filename='old_results/rendered_wano.yml')
         settings['title']=old_settings['title']
         if settings['use old mos']: settings['multiplicity']=old_settings['multiplicity']
 
-    if settings['use old coord']: os.system('cp old_results/coord %s'%(coord_file))
-    else: os.system('x2t initial_structure.xyz > %s'%(coord_file))
+    else:
+        if settings['structure file type'] == 'Turbomole coord': os.rename('initial_structure',coord_file)
+        else:
+            if settings['structure file type'] == 'Gaussian input':
+                ginp = GaussianInput.from_file('initial_structure')
+                xyz.XYZ(ginp.molecule).write_file('initial_structure')
+            os.system('x2t initial_structure > %s'%(coord_file))
 
     if not settings['use old mos']:
-        n_el=sum(ase.io.read(coord_file).numbers)-settings['charge']
-        settings['multiplicity']=sanitize_multiplicity(settings['multiplicity'],n_el)
+        if settings['charge from file'] and settings['structure file type'] == 'Gaussian input': settings['charge'], settings['multiplicity'] = ginp.charge, ginp.spin_multiplicity
+        else:
+            n_el=sum(ase.io.read(coord_file).numbers)-settings['charge']
+            settings['multiplicity']=sanitize_multiplicity(settings['multiplicity'],n_el)
 
     tm.inputprep('define',tm.make_define_str(settings,coord_file))
     if settings['follow-up']: os.system('rm -rf old_results')
@@ -142,10 +154,11 @@ if __name__ == '__main__':
             if 'zero point' in ao_line: results_dict['ZPE']=float(ao_line.split()[6])
         results_dict['vibrational frequencies']=vib_freq
 
-    with open('results.yml','w') as outfile: yaml.dump(results_dict,outfile)
+    with open('turbomole_results.yml','w') as outfile: yaml.dump(results_dict,outfile)
 
     output_files=['alpha','auxbasis','basis','beta','control','coord','energy','forceapprox','gradient','hessapprox','mos','optinfo','rendered_wano.yml','sing_a','trip_a','unrs_a'] # implement symmetry: irrep names in [sing,trip,unrs]_irrep
     for filename in output_files:
         if not os.path.isfile(filename): output_files.remove(filename)
 
     os.system('tar -cf results.tar.xz %s'%(' '.join(output_files)))
+    os.system('t2x coord > final_structure.xyz')

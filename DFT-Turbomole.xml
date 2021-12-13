@@ -19,10 +19,14 @@
 		<WaNoString visibility_condition="%s == False" visibility_var_path="Follow-up calculation" name="Title">Title</WaNoString>
 		<WaNoFile visibility_condition="%s == True" visibility_var_path="Follow-up calculation" logical_filename="old_calc.tar.xz" name="Results from old calculation">results.tar.xz</WaNoFile>
 
-	    	<WaNoDictBox name="Molecular structure">
-			<WaNoBool visibility_condition="%s == True" visibility_var_path="Follow-up calculation" name="Use old structure">False</WaNoBool>
-			<WaNoFile visibility_condition="%s == False" visibility_var_path="Molecular structure.Use old structure" logical_filename="initial_structure.xyz" name="Structure file"> Structure in .xyz format</WaNoFile>
-			<WaNoBool visibility_condition="%s == False" visibility_var_path="Molecular structure.Use old structure" name="Internal coordinates">False</WaNoBool>
+	    	<WaNoDictBox name='Molecular structure' visibility_condition='%s == False' visibility_var_path='Follow-up calculation'>
+			<WaNoDropDown name = 'Structure file type'>
+				<Entry id = '0' chosen='True'>xyz</Entry>
+				<Entry id = '1'>Turbomole coord</Entry>
+				<Entry id = '2'>Gaussian input</Entry>
+			</WaNoDropDown>
+			<WaNoFile name='Structure file' logical_filename='initial_structure'>structure file</WaNoFile>
+			<WaNoBool name="Internal coordinates">False</WaNoBool>
             	</WaNoDictBox>
 
 		<WaNoDictBox name="Basis set">
@@ -48,8 +52,11 @@
 	
             	<WaNoDictBox name="Initial guess">
 			<WaNoBool visibility_condition="%s == True" visibility_var_path="Follow-up calculation" name="Use old orbitals" description = "Charge and multiplicity will be taken from old calculation">False</WaNoBool>
-                	<WaNoInt visibility_condition="%s == False" visibility_var_path="Initial guess.Use old orbitals" name="Charge" description = "Extended Hueckel Guess">0</WaNoInt>
-			<WaNoInt visibility_condition="%s == False" visibility_var_path="Initial guess.Use old orbitals" name="Multiplicity" description = "Must be possible with the given charge">1</WaNoInt>
+			<WaNoGroup name='G1' visibility_condition="%s == False" visibility_var_path="Initial guess.Use old orbitals">
+				<WaNoBool name = 'Use charge and multiplicity from input file' visibility_condition = '"%s" == "Gaussian input"' visibility_var_path='Molecular structure.Structure file type'>False</WaNoBool>
+                		<WaNoInt name="Charge" visibility_condition = '%s == False' visibility_var_path = 'Initial guess.G1.Use charge and multiplicity from input file' description = "Extended Hueckel Guess">0</WaNoInt>
+				<WaNoInt name="Multiplicity" visibility_condition = '%s == False' visibility_var_path = 'Initial guess.G1.Use charge and multiplicity from input file' description = "Must be possible with the given charge">1</WaNoInt>
+			</WaNoGroup>
             	</WaNoDictBox>
             
 		<WaNoDictBox name="DFT options">
@@ -90,7 +97,7 @@
 			<WaNoInt visibility_condition='%s == True' visibility_var_path='Type of calculation.Structure optimisation' name="Max optimization cycles">500</WaNoInt>
 			<WaNoBool name="Excited states calculation">False</WaNoBool>
 			<WaNoDictBox visibility_condition="%s == True" visibility_var_path="Type of calculation.Excited states calculation" name="TDDFT options">
-				<WaNoDropDown description="Only relevant for for closed-shell ground states" visibility_condition="%i == 1" visibility_var_path="Initial guess.Multiplicity" name="Type of excited states">
+				<WaNoDropDown description="Only relevant for for closed-shell ground states" visibility_condition="%i == 1" visibility_var_path="Initial guess.G1.Multiplicity" name="Type of excited states">
 					<Entry id="0" chosen="True">Singlet</Entry>
 					<Entry id="1">Triplet</Entry>
 				</WaNoDropDown>
@@ -102,20 +109,21 @@
     </WaNoRoot>
 
     <WaNoExecCommand>
-	source /home/ws/gt5111/miniconda3/etc/profile.d/conda.sh
-	conda activate
-	bash ./tm.sh
+	export NANOVER=V4
+	source $NANOMATCH/$NANOVER/local_anaconda/bin/activate
+	conda activate simstack_kit
+	source $NANOMATCH/$NANOVER/configs/turbomole.config  
+	python run_tm.py
 	</WaNoExecCommand>
 
     <WaNoInputFiles>
-        <WaNoInputFile logical_filename="tm.sh">tm.sh</WaNoInputFile>
         <WaNoInputFile logical_filename="run_tm.py">run_tm.py</WaNoInputFile>
         <WaNoInputFile logical_filename="turbomole_functions.py">turbomole_functions.py</WaNoInputFile>
     </WaNoInputFiles>
     
     <WaNoOutputFiles>
         <WaNoOutputFile>results.tar.xz</WaNoOutputFile>
-        <WaNoOutputFile>results.yml</WaNoOutputFile>
+        <WaNoOutputFile>turbomole_results.yml</WaNoOutputFile>
         <WaNoOutputFile>final_structure.xyz</WaNoOutputFile>
     </WaNoOutputFiles>
 </WaNoTemplate>
