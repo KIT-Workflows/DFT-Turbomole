@@ -3,8 +3,11 @@
 
 	<WaNoMeta>
  		<Author>
-		<Name> Tobias Schlöder and Celso R. C. Rego </Name>
-  		<Email> tobias.schloeder@kit.edu, celsorego@kit.edu</Email>
+		<Name> Tobias Schlöder </Name>
+  		<Email> tobias.schloeder@kit.edu</Email>
+ 		<Author>
+		<Name> Celso R. C. Rego </Name>
+  		<Email> celsorego@kit.edu</Email>
  		</Author>
 		<Description>
 			This WaNo performs the DFT calculation using Turbomole code. Here all 
@@ -52,11 +55,11 @@
 	
             	<WaNoDictBox name="Initial guess">
 			<WaNoBool visibility_condition="%s == True" visibility_var_path="Follow-up calculation" name="Use old orbitals" description = "Charge and multiplicity will be taken from old calculation">False</WaNoBool>
-			<WaNoGroup name='G1' visibility_condition="%s == False" visibility_var_path="Initial guess.Use old orbitals">
+			<WaNoInviBox name='G1' visibility_condition="%s == False" visibility_var_path="Initial guess.Use old orbitals">
 				<WaNoBool name = 'Use charge and multiplicity from input file' visibility_condition = '"%s" == "Gaussian input"' visibility_var_path='Molecular structure.Structure file type'>False</WaNoBool>
                 		<WaNoInt name="Charge" visibility_condition = '%s == False' visibility_var_path = 'Initial guess.G1.Use charge and multiplicity from input file' description = "Extended Hueckel Guess">0</WaNoInt>
 				<WaNoInt name="Multiplicity" visibility_condition = '%s == False' visibility_var_path = 'Initial guess.G1.Use charge and multiplicity from input file' description = "Must be possible with the given charge">1</WaNoInt>
-			</WaNoGroup>
+			</WaNoInviBox>
             	</WaNoDictBox>
             
 		<WaNoDictBox name="DFT options">
@@ -95,8 +98,8 @@
 		<WaNoDictBox name="Type of calculation">
 			<WaNoBool name="Structure optimisation">False</WaNoBool>
 			<WaNoInt visibility_condition='%s == True' visibility_var_path='Type of calculation.Structure optimisation' name="Max optimization cycles">500</WaNoInt>
-			<WaNoBool name="Excited states calculation">False</WaNoBool>
-			<WaNoDictBox visibility_condition="%s == True" visibility_var_path="Type of calculation.Excited states calculation" name="TDDFT options">
+			<WaNoBool name="Excited state calculation">False</WaNoBool>
+			<WaNoDictBox visibility_condition="%s == True" visibility_var_path="Type of calculation.Excited state calculation" name="TDDFT options">
 				<WaNoDropDown description="Only relevant for for closed-shell ground states" visibility_condition="%i == 1" visibility_var_path="Initial guess.G1.Multiplicity" name="Type of excited states">
 					<Entry id="0" chosen="True">Singlet</Entry>
 					<Entry id="1">Triplet</Entry>
@@ -104,7 +107,7 @@
 				<WaNoInt name="Number of excited states">5</WaNoInt>
 				<WaNoInt visibility_condition="%s == True" visibility_var_path="Type of calculation.Structure optimisation" name="Optimised state">1</WaNoInt>
 	    		</WaNoDictBox>
-			<WaNoBool name="Frequency calculation" visibility_condition="%s == False" visibility_var_path='Type of calculation.Excited states calculation' description = "Vibrational Analysis only for ground states (using aoforce)">False</WaNoBool>
+			<WaNoBool name="Frequency calculation" visibility_condition="%s == False" visibility_var_path='Type of calculation.Excited state calculation' description = "Vibrational Analysis only for ground states (using aoforce)">False</WaNoBool>
 	    	</WaNoDictBox>
     </WaNoRoot>
 
