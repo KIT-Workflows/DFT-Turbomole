@@ -5,15 +5,17 @@
  		<Author>
 		<Name> Tobias Schlöder </Name>
   		<Email> tobias.schloeder@kit.edu</Email>
+	i	</Author>
  		<Author>
 		<Name> Celso R. C. Rego </Name>
   		<Email> celsorego@kit.edu</Email>
  		</Author>
 		<Description>
-			This WaNo performs the DFT calculation using Turbomole code. Here all 
-			the inputs files might be automatically generated or loaded.
+    			This is a WaNo for running DFT and TDDFT calculations with the Turbomole code requiring only a structure file as the minimal input.
  		</Description>
  		<Keyword>DFT</Keyword>
+ 		<Keyword>TDDFT</Keyword>
+ 		<Keyword>Turbomole</Keyword>
 	</WaNoMeta>
 
 	<WaNoRoot name="DFT Turbomole">
@@ -22,14 +24,15 @@
 		<WaNoString visibility_condition="%s == False" visibility_var_path="Follow-up calculation" name="Title">Title</WaNoString>
 		<WaNoFile visibility_condition="%s == True" visibility_var_path="Follow-up calculation" logical_filename="old_calc.tar.xz" name="Results from old calculation">results.tar.xz</WaNoFile>
 
-	    	<WaNoDictBox name='Molecular structure' visibility_condition='%s == False' visibility_var_path='Follow-up calculation'>
-			<WaNoDropDown name = 'Structure file type'>
+	    	<WaNoDictBox name='Molecular structure'>
+			<WaNoBool name ='Use old structure' visibility_condition='%s == True' visibility_var_path='Follow-up calculation'>False</WaNoBool>
+			<WaNoDropDown name = 'Structure file type' visibility_condition='%s == False' visibility_var_path='Molecular structure.Use old structure'>
 				<Entry id = '0' chosen='True'>xyz</Entry>
 				<Entry id = '1'>Turbomole coord</Entry>
 				<Entry id = '2'>Gaussian input</Entry>
 			</WaNoDropDown>
-			<WaNoFile name='Structure file' logical_filename='initial_structure'>structure file</WaNoFile>
-			<WaNoBool name="Internal coordinates">False</WaNoBool>
+			<WaNoFile name='Structure file' logical_filename='initial_structure' visibility_condition='%s == False' visibility_var_path='Molecular structure.Use old structure'>structure file</WaNoFile>
+			<WaNoBool name="Internal coordinates" visibility_condition='%s == False' visibility_var_path='Molecular structure.Use old structure'>False</WaNoBool>
             	</WaNoDictBox>
 
 		<WaNoDictBox name="Basis set">
@@ -63,9 +66,11 @@
             	</WaNoDictBox>
             
 		<WaNoDictBox name="DFT options">
-			<WaNoInt name='Max SCF iterations'>300</WaNoInt>
-			<WaNoBool name="Use RI">True</WaNoBool>
-			<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
+			<WaNoDropDown name=''>
+				<Entry id='0' chosen='True'>Basic</Entry>
+				<Entry id='1'>Advanced</Entry>
+			</WaNoDropDown>
+
 			<WaNoDropDown name="Functional">
 				<Entry id="0">None</Entry>
 				<Entry id="1">b-p</Entry>
@@ -77,12 +82,6 @@
 				<Entry id="7">tpss</Entry>
 				<Entry id="8">tpssh</Entry>
 	        	</WaNoDropDown>
-				
-			<WaNoDropDown name="Integration grid">
-				<Entry id="0" chosen="True">m3</Entry>
-				<Entry id="1">m4</Entry>
-				<Entry id="2">m5</Entry>
-	        	</WaNoDropDown>
 
 			<WaNoDropDown name="vdW correction">
 				<Entry id="0" chosen="True">None</Entry>
@@ -91,8 +90,19 @@
 				<Entry id="3">D3-BJ</Entry>
 				<Entry id="4">D4</Entry>
 	        	</WaNoDropDown>
+
 			<WaNoBool name="COSMO calculation">False</WaNoBool>
 			<WaNoFloat name="Rel. permittivity" visibility_condition="%s == True" visibility_var_path="DFT options.COSMO calculation">1.0</WaNoFloat>
+			<WaNoInviBox name='Adv options' visibility_condition='"%s" == "Advanced"' visibility_var_path='DFT options.'>
+				<WaNoInt name='Max SCF iterations'>300</WaNoInt>
+				<WaNoBool name="Use RI">True</WaNoBool>
+				<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.Adv options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
+				<WaNoDropDown name="Integration grid">
+					<Entry id="0" chosen="True">m3</Entry>
+					<Entry id="1">m4</Entry>
+					<Entry id="2">m5</Entry>
+	        		</WaNoDropDown>
+			</WaNoInviBox>
             	</WaNoDictBox>
             
 		<WaNoDictBox name="Type of calculation">
