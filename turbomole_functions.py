@@ -1,4 +1,4 @@
-import os,glob,sys,yaml
+import os, shutil, glob, sys, yaml
 import subprocess
 
 #function definitions
@@ -20,9 +20,9 @@ def utf8_dec(var):
 def make_define_str(settings,coord):
     
     if settings['use old mos']:
-        with open('old_results/rendered_wano.yml') as infile:
+        with open('old_results/settings.yml') as infile:
             old_settings = yaml.full_load(infile)
-        same_basis = old_settings['Basis set']['Basis set type'] == settings['basis set']
+        same_basis = old_settings['basis set'] == settings['basis set']
 
     if not (settings['use old mos'] and same_basis):
         define_string = '\n%s\na %s\n'%(settings['title'],coord)
@@ -93,11 +93,11 @@ def make_define_str(settings,coord):
         define_string+='dsp\n%s\n\n'%(settings['disp'])
         
         if not settings['tddft']:
-            if old_settings['Type of calculation']['Excited state calculation']:
+            if old_settings['tddft']:
                 os.system('sed -i \'s/#$max/$max/g\' control')
                 for dg in 'soes','scfinstab','rpacor','denconv': os.system('kdg %s'%(dg))
 
-        elif not old_settings['Type of calculation']['Excited state calculation']:
+        elif not old_settings['tddft']:
             define_string+='ex\n'
             if settings['multiplicity'] > 1: define_string+='urpa\n*\n'
             else: define_string+='rpa%s\n*\n'%(settings['exc state type'][0].lower())
@@ -107,7 +107,7 @@ def make_define_str(settings,coord):
         else: 
             define_string+='ex\n'
 
-            if old_settings['Type of calculation']['TDDFT options']['Type of excited states'] != settings['exc state type']:
+            if old_settings['exc state type'] != settings['exc state type']:
                 if settings['multiplicity'] > 1:
                     define_string+='urpa\n'
 

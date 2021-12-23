@@ -36,7 +36,8 @@
             	</WaNoDictBox>
 
 		<WaNoDictBox name="Basis set">
-                	<WaNoDropDown name="Basis set type">
+			<WaNoBool visibility_condition="%s == True" visibility_var_path="Follow-up calculation" name='Use basis set from previous calculation'>False</WaNoBool>
+                	<WaNoDropDown name="Basis set type" visibility_condition='%s == False' visibility_var_path='Basis set.Use basis set from previous calculation'>
                     		<Entry id="0">def-SV(P)</Entry>
                 		<Entry id="1" chosen="True">def2-SVP</Entry>
 	         		<Entry id="2">def2-TZVP</Entry>
@@ -66,42 +67,41 @@
             	</WaNoDictBox>
             
 		<WaNoDictBox name="DFT options">
-			<WaNoDropDown name=''>
-				<Entry id='0' chosen='True'>Basic</Entry>
-				<Entry id='1'>Advanced</Entry>
-			</WaNoDropDown>
-
-			<WaNoDropDown name="Functional">
-				<Entry id="0">None</Entry>
-				<Entry id="1">b-p</Entry>
-				<Entry id="2">pbe</Entry>
-				<Entry id="3" chosen="True">b3-lyp</Entry>
-	            		<Entry id="4">pbe0</Entry>
-	            		<Entry id="5">m06</Entry>
-	            		<Entry id="6">m06-2x</Entry>
-				<Entry id="7">tpss</Entry>
-				<Entry id="8">tpssh</Entry>
-	        	</WaNoDropDown>
-
-			<WaNoDropDown name="vdW correction">
-				<Entry id="0" chosen="True">None</Entry>
-				<Entry id="1">D2</Entry>
-				<Entry id="2">D3</Entry>
-				<Entry id="3">D3-BJ</Entry>
-				<Entry id="4">D4</Entry>
-	        	</WaNoDropDown>
-
-			<WaNoBool name="COSMO calculation">False</WaNoBool>
-			<WaNoFloat name="Rel. permittivity" visibility_condition="%s == True" visibility_var_path="DFT options.COSMO calculation">1.0</WaNoFloat>
-			<WaNoInviBox name='Adv options' visibility_condition='"%s" == "Advanced"' visibility_var_path='DFT options.'>
-				<WaNoInt name='Max SCF iterations'>300</WaNoInt>
-				<WaNoBool name="Use RI">True</WaNoBool>
-				<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.Adv options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
-				<WaNoDropDown name="Integration grid">
-					<Entry id="0" chosen="True">m3</Entry>
-					<Entry id="1">m4</Entry>
-					<Entry id="2">m5</Entry>
+			<WaNoBool visibility_condition="%s == True" visibility_var_path="Follow-up calculation" name='Use parameters from previous calculation'>False</WaNoBool>
+			<WaNoInviBox name='G1' visibility_condition='%s == False' visibility_var_path='DFT options.Use parameters from previous calculation'>
+				<WaNoBool name='Advanced options'>False</WaNoBool>
+				<WaNoDropDown name="Functional">
+					<Entry id="0">None</Entry>
+					<Entry id="1">b-p</Entry>
+					<Entry id="2">pbe</Entry>
+					<Entry id="3" chosen="True">b3-lyp</Entry>
+	            			<Entry id="4">pbe0</Entry>
+	            			<Entry id="5">m06</Entry>
+		            		<Entry id="6">m06-2x</Entry>
+					<Entry id="7">tpss</Entry>
+					<Entry id="8">tpssh</Entry>
 	        		</WaNoDropDown>
+
+				<WaNoDropDown name="vdW correction">
+					<Entry id="0" chosen="True">None</Entry>
+					<Entry id="1">D2</Entry>
+					<Entry id="2">D3</Entry>
+					<Entry id="3">D3-BJ</Entry>
+					<Entry id="4">D4</Entry>
+		        	</WaNoDropDown>
+
+				<WaNoBool name="COSMO calculation">False</WaNoBool>
+				<WaNoFloat name="Rel. permittivity" visibility_condition="%s == True" visibility_var_path="DFT options.G1.COSMO calculation">1.0</WaNoFloat>
+				<WaNoInviBox name='Adv options' visibility_condition='%s == True' visibility_var_path='DFT options.G1.Advanced options'>
+					<WaNoInt name='Max SCF iterations'>300</WaNoInt>
+					<WaNoBool name="Use RI">True</WaNoBool>
+					<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.Adv options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
+					<WaNoDropDown name="Integration grid">
+						<Entry id="0" chosen="True">m3</Entry>
+						<Entry id="1">m4</Entry>
+						<Entry id="2">m5</Entry>
+	        			</WaNoDropDown>
+				</WaNoInviBox>
 			</WaNoInviBox>
             	</WaNoDictBox>
             

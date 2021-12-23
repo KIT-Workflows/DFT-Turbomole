@@ -12,41 +12,42 @@ from pymatgen.io.gaussian import GaussianInput
 ###                                                          ###
 ################################################################
 
-def get_settings_from_rendered_wano(filename='rendered_wano.yml'):
+def get_settings_from_rendered_wano():
+    global wano_file
 
     disp_dict={'None':'off','D2':'old','D3':'on','D3-BJ':'bj','D4':'d4'}
 
     settings=dict()
-    with open(filename) as infile:
-        wano_file = yaml.full_load(infile)
     
-    settings['title']=wano_file['Title']
-    settings['follow-up']=wano_file['Follow-up calculation']
-    settings['use old struct']=wano_file['Molecular structure']['Use old structure']
-    settings['structure file type']=wano_file['Molecular structure']['Structure file type']
-    settings['int coord']=wano_file['Molecular structure']['Internal coordinates']
-    settings['basis set']=wano_file['Basis set']['Basis set type']
-    settings['use old mos']=wano_file['Initial guess']['Use old orbitals']
-    settings['charge from file']=wano_file['Initial guess']['G1']['Use charge and multiplicity from input file']
-    settings['charge']=wano_file['Initial guess']['G1']['Charge']
-    settings['multiplicity']=wano_file['Initial guess']['G1']['Multiplicity']
-    settings['scf iter']=60
-    settings['max scf iter']=wano_file['DFT options']['Adv options']['Max SCF iterations']
-    settings['use ri']=wano_file['DFT options']['Adv options']['Use RI']
-    settings['ricore']=wano_file['DFT options']['Adv options']['Memory for RI']
-    settings['functional']=wano_file['DFT options']['Functional']
-    settings['grid size']=wano_file['DFT options']['Adv options']['Integration grid']
-    settings['disp']=disp_dict[wano_file['DFT options']['vdW correction']]
-    settings['cosmo']=wano_file['DFT options']['COSMO calculation']
-    settings['epsilon']=wano_file['DFT options']['Rel. permittivity']
-    settings['opt']=wano_file['Type of calculation']['Structure optimisation']
-    settings['opt cyc']=50
-    settings['max opt cyc']=wano_file['Type of calculation']['Max optimization cycles']
-    settings['freq']=wano_file['Type of calculation']['Frequency calculation']
-    settings['tddft']=wano_file['Type of calculation']['Excited state calculation']
-    settings['exc state type']=wano_file['Type of calculation']['TDDFT options']['Type of excited states']
-    settings['num exc states']=wano_file['Type of calculation']['TDDFT options']['Number of excited states']
-    settings['opt exc state']=wano_file['Type of calculation']['TDDFT options']['Optimised state']
+    settings['title'] = wano_file['Title']
+    settings['follow-up'] = wano_file['Follow-up calculation']
+    settings['use old struct'] = wano_file['Molecular structure']['Use old structure']
+    settings['structure file type'] = wano_file['Molecular structure']['Structure file type']
+    settings['int coord'] = wano_file['Molecular structure']['Internal coordinates']
+    settings['old basis'] = wano_file['Basis set']['Use basis set from previous calculation']
+    settings['basis set'] = wano_file['Basis set']['Basis set type']
+    settings['use old mos'] = wano_file['Initial guess']['Use old orbitals']
+    settings['charge from file'] = wano_file['Initial guess']['G1']['Use charge and multiplicity from input file']
+    settings['charge'] = wano_file['Initial guess']['G1']['Charge']
+    settings['multiplicity'] = wano_file['Initial guess']['G1']['Multiplicity']
+    settings['old dft options'] = wano_file['DFT options']['Use parameters from previous calculation']
+    settings['scf iter'] = 60
+    settings['max scf iter'] = wano_file['DFT options']['G1']['Adv options']['Max SCF iterations']
+    settings['use ri'] = wano_file['DFT options']['G1']['Adv options']['Use RI']
+    settings['ricore'] = wano_file['DFT options']['G1']['Adv options']['Memory for RI']
+    settings['functional'] = wano_file['DFT options']['G1']['Functional']
+    settings['grid size'] = wano_file['DFT options']['G1']['Adv options']['Integration grid']
+    settings['disp'] = disp_dict[wano_file['DFT options']['G1']['vdW correction']]
+    settings['cosmo'] = wano_file['DFT options']['G1']['COSMO calculation']
+    settings['epsilon'] = wano_file['DFT options']['G1']['Rel. permittivity']
+    settings['opt'] = wano_file['Type of calculation']['Structure optimisation']
+    settings['opt cyc'] = 50
+    settings['max opt cyc'] = wano_file['Type of calculation']['Max optimization cycles']
+    settings['freq'] = wano_file['Type of calculation']['Frequency calculation']
+    settings['tddft'] = wano_file['Type of calculation']['Excited state calculation']
+    settings['exc state type'] = wano_file['Type of calculation']['TDDFT options']['Type of excited states']
+    settings['num exc states'] = wano_file['Type of calculation']['TDDFT options']['Number of excited states']
+    settings['opt exc state'] = wano_file['Type of calculation']['TDDFT options']['Optimised state']
 
     return settings
 
@@ -68,28 +69,38 @@ def sanitize_multiplicity(multi,n_el):
     if multi_new < multi_min: multi_new=multi_min
     if multi != multi_new:
         print('The multiplicity was set to %i by default'%(multi_new))
-        with open('rendered_wano.yml') as infile:
-            wano_file=yaml.full_load(infile)
-        wano_file['Initial guess']['Multiplicity']=int(multi_new)
-        with open('rendered_wano.yml','w') as outfile: yaml.dump(wano_file,outfile)
     
     return multi_new
 
 if __name__ == '__main__':
     
-    coord_file='coord_0'
-    settings=get_settings_from_rendered_wano()
+    with open('rendered_wano.yml') as infile:
+        wano_file = yaml.full_load(infile)
+
+    coord_file = 'coord_0'
+    settings = get_settings_from_rendered_wano()
 
     if settings['follow-up']: 
         os.mkdir('old_results')
         os.system('tar -xf old_calc.tar.xz -C old_results')
 
         if settings['use old struct']: 
-            shutil.copy('old_results/coord',coord_file)
+            shutil.copy('old_results/coord', coord_file)
 
-        old_settings = get_settings_from_rendered_wano(filename='old_results/rendered_wano.yml')
-        settings['title']=old_settings['title']
-        if settings['use old mos']: settings['multiplicity']=old_settings['multiplicity']
+        with open('old_results/settings.yml') as infile:
+            old_settings = yaml.full_load(infile)
+
+        settings['title'] = old_settings['title']
+
+        if settings['old basis']:
+            settings['basis set'] = old_settings['basis set']
+
+        if settings['use old mos']:
+            settings['multiplicity'] = old_settings['multiplicity']
+
+        if settings['old dft options']:
+            for key in ['max scf iter', 'use ri', 'ricore', 'functional', 'grid size', 'disp', 'cosmo', 'epsilon']:
+                settings[key] = old_settings[key]
     
     if not os.path.isfile(coord_file):
         if settings['structure file type'] == 'Turbomole coord':
@@ -109,6 +120,9 @@ if __name__ == '__main__':
         else:
             n_el = sum(ase.io.read(coord_file).numbers)-settings['charge']
             settings['multiplicity'] = sanitize_multiplicity(settings['multiplicity'],n_el)
+
+    with open('settings.yml','w') as outfile:
+        yaml.dump(settings, outfile)
 
     tm.inputprep('define',tm.make_define_str(settings,coord_file))
 
@@ -132,7 +146,9 @@ if __name__ == '__main__':
             settings['opt']=False
 
     tm.single_point_calc(settings)
-    if settings['opt']: tm.jobex(settings)
+
+    if settings['opt']:
+        tm.jobex(settings)
 
     if settings['freq']:
         if settings['tddft']: 
@@ -140,9 +156,9 @@ if __name__ == '__main__':
             exit(0)
         else: tm.aoforce()
 
-    results_dict={}
-    results_dict['title']=settings['title']
-    results_dict['energy_unit']='Hartree'
+    results_dict = {}
+    results_dict['title'] = settings['title']
+    results_dict['energy_unit'] = 'Hartree'
 
     with open('energy') as infile: results_dict['energy'] = float(infile.readlines()[-2].split()[1])
     with open('eiger.out') as infile: results_dict['homo-lumo gap'] = float(infile.readlines()[14].split()[2])
@@ -187,7 +203,7 @@ if __name__ == '__main__':
     with open('turbomole_results.yml','w') as outfile:
         yaml.dump(results_dict,outfile)
 
-    output_files = ['alpha','auxbasis','basis','beta','control','coord','energy','forceapprox','gradient','hessapprox','mos','optinfo','rendered_wano.yml','sing_a','trip_a','unrs_a'] # implement symmetry: irrep names in [sing,trip,unrs]_irrep
+    output_files = ['alpha','auxbasis','basis','beta','control','coord','energy','forceapprox','gradient','hessapprox','mos','optinfo','settings.yml','sing_a','trip_a','unrs_a'] # implement symmetry: irrep names in [sing,trip,unrs]_irrep
     for filename in output_files:
         if not os.path.isfile(filename):
             output_files.remove(filename)
