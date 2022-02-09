@@ -39,15 +39,15 @@ def get_settings_from_rendered_wano():
     settings['grid size'] = wano_file['DFT options']['G1']['Adv options']['Integration grid']
     settings['disp'] = disp_dict[wano_file['DFT options']['G1']['vdW correction']]
     settings['cosmo'] = wano_file['DFT options']['G1']['COSMO calculation']
-    settings['epsilon'] = wano_file['DFT options']['G1']['Rel. permittivity']
+    settings['epsilon'] = wano_file['DFT options']['G1']['Rel permittivity']
     settings['opt'] = wano_file['Type of calculation']['Structure optimisation']
     settings['opt cyc'] = 50
     settings['max opt cyc'] = wano_file['Type of calculation']['Max optimization cycles']
     settings['freq'] = wano_file['Type of calculation']['Frequency calculation']
     settings['tddft'] = wano_file['Type of calculation']['Excited state calculation']
     settings['exc state type'] = wano_file['Type of calculation']['TDDFT options']['Type of excited states']
-    settings['num exc states'] = wano_file['Type of calculation']['TDDFT options']['Number of excited states']
-    settings['opt exc state'] = wano_file['Type of calculation']['TDDFT options']['Optimised state']
+    settings['num exc states'] = int(wano_file['Type of calculation']['TDDFT options']['Number of excited states'])
+    settings['opt exc state'] = int(wano_file['Type of calculation']['TDDFT options']['Optimised state'])
 
     return settings
 
@@ -140,7 +140,7 @@ if __name__ == '__main__':
        for datagroup in ['cosmo','cosmo_atoms','cosmo_out']: os.system('kdg %s'%(datagroup))
 
     if settings['tddft'] and settings['opt']:
-        if not settings['cosmo']: os.system('adg exopt %i'%(settings['opt exc state']))
+        if not settings['cosmo']: os.system('adg exopt %i'%settings['opt exc state'])
         else:
             print('Excited state optimisations with COSMO not yet implemented in Turbomole\'s egrad - A single-point calculation is performed instead')
             settings['opt']=False
