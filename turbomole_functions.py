@@ -265,7 +265,7 @@ def check_opt():
                         err = 'opt not converged'
                         break
                     if 'your energy calculation did not converge' in line:
-                        err = 'scf problem during step nr. %s'%(glob.glob('job.[123456789]')[0].split('.')[-1])
+                        err = 'scf problem during step nr. %s'%(glob.glob('job.[1-9]*')[0].split('.')[-1])
                         break
     else: err='' # check for problems with last run here, e.g. neg. HLG
     

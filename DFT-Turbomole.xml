@@ -95,7 +95,7 @@
 				<WaNoInviBox name='Adv options' visibility_condition='%s == True' visibility_var_path='DFT options.G1.Advanced options'>
 					<WaNoInt name='Max SCF iterations'>300</WaNoInt>
 					<WaNoBool name="Use RI">True</WaNoBool>
-					<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.Adv options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
+					<WaNoInt visibility_condition="%s == True" visibility_var_path="DFT options.G1.Adv options.Use RI" name="Memory for RI" description="value in MB">2000</WaNoInt>
 					<WaNoDropDown name="Integration grid">
 						<Entry id="0" chosen="True">m3</Entry>
 						<Entry id="1">m4</Entry>

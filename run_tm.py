@@ -20,6 +20,8 @@ def get_settings_from_rendered_wano():
     settings=dict()
     
     settings['title'] = wano_file['Title']
+    if '/' in settings['title']:
+        settings['title'] = os.path.basename(settings['title'])
     settings['follow-up'] = wano_file['Follow-up calculation']
     settings['use old struct'] = wano_file['Molecular structure']['Use old structure']
     settings['structure file type'] = wano_file['Molecular structure']['Structure file type']
