@@ -107,6 +107,7 @@
             
 		<WaNoDictBox name="Type of calculation">
 			<WaNoBool name="Structure optimisation">False</WaNoBool>
+			<WaNoBool visibility_condition='%s == False' visibility_var_path='Type of calculation.Structure optimisation' name="Calculate energy gradient">False</WaNoBool>
 			<WaNoInt visibility_condition='%s == True' visibility_var_path='Type of calculation.Structure optimisation' name="Max optimization cycles">500</WaNoInt>
 			<WaNoBool name="Excited state calculation">False</WaNoBool>
 			<WaNoDictBox visibility_condition="%s == True" visibility_var_path="Type of calculation.Excited state calculation" name="TDDFT options">
@@ -123,8 +124,6 @@
 
 	<WaNoExecCommand>
 	export NANOVER=V4
-	source $NANOMATCH/$NANOVER/local_anaconda/bin/activate
-	conda activate simstack_kit
 	source $NANOMATCH/$NANOVER/configs/turbomole.config  
 	python run_tm.py
 	</WaNoExecCommand>

@@ -135,8 +135,8 @@ def inputprep(program,input_string):
        for line in lines: print(line)
 
 def single_point_calc(settings,tmp=False):
-    if settings['use ri']: scf_program='ridft'
-    else: scf_program='dscf'
+
+    scf_program = 'ridft' if settings['use ri'] else 'dscf'
 
     if tmp: suffix='_tmp'
     elif settings['opt']: suffix='_0'
@@ -165,6 +165,10 @@ def single_point_calc(settings,tmp=False):
         if not done:
             print('Problem with escf calculation found - please check manually')
             exit(0)
+
+def gradient_calc(settings):
+    grad_program = 'rdgrad' if settings['use ri'] else 'grad'
+    run_turbomole(grad_program)
 
 def aoforce():
     run_turbomole('aoforce','aoforce.out')

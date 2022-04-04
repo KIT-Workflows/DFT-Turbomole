@@ -45,6 +45,7 @@ def get_settings_from_rendered_wano():
     settings['opt'] = wano_file['Type of calculation']['Structure optimisation']
     settings['opt cyc'] = 50
     settings['max opt cyc'] = wano_file['Type of calculation']['Max optimization cycles']
+    settings['gradient'] = wano_file['Type of calculation']['Calculate energy gradient']
     settings['freq'] = wano_file['Type of calculation']['Frequency calculation']
     settings['tddft'] = wano_file['Type of calculation']['Excited state calculation']
     settings['exc state type'] = wano_file['Type of calculation']['TDDFT options']['Type of excited states']
@@ -151,6 +152,9 @@ if __name__ == '__main__':
 
     if settings['opt']:
         tm.jobex(settings)
+
+    elif settings['gradient']:
+        tm.gradient_calc(settings)
 
     if settings['freq']:
         if settings['tddft']: 
