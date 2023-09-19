@@ -1,0 +1,20 @@
+{
+    "workflow_environment":"SimStack",
+    "title": "DFT-Turbomole",
+    "description": "The DFT-Turbomole WaNo implements a wide range of methods available within the Turbomole code",
+    "authors": [
+        "Tobias Schlöder", "tobias.schloeder@kit.edu",
+        "Celso R. C. Rego", "celsorego@kit.edu"
+    ],
+    "version": "0.0.1",
+    "logo": "DFT-Turbomole.png",
+    "release": {
+        "latest_release_date": "e.g., 2023-19-22",
+        "latest_release_tag": "e.g., 0.0.1"
+    },
+    
+    "keywords": [
+        "dft",
+        "Turbomole"
+    ]
+}
